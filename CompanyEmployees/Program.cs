@@ -35,6 +35,11 @@ builder.Services.ConfigureHttpCacheHeaders();
 builder.Services.AddMemoryCache();
 builder.Services.ConfigureRateLimitingOptions();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.AddJwtConfiguration(builder.Configuration);
+builder.Services.ConfigureSwagger();
 
 /*
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.WithOrigins("link")
@@ -108,12 +113,19 @@ app.UseCors("CorsPolicy"); //app.UseCors();
 app.UseResponseCaching();
 app.UseHttpCacheHeaders();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSwagger();
+app.UseSwaggerUI(s =>
+{
+    s.SwaggerEndpoint("/swagger/v1/swagger.json", "Code Maze API v1");
+    s.SwaggerEndpoint("/swagger/v2/swagger.json", "Code Maze API v2");
+});
 
 app.MapControllers();
 
 app.Run();
-
 
 //for Patch
 NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() =>
